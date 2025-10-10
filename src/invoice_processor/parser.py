@@ -10,8 +10,8 @@ class FilenameParser:
     """
     FILE_PATTERN = re.compile(
         r'^(?P<year>\d{4})-'
-        r'(?P<month>\d{2})-'
-        r'(?P<day>\d{2})-'
+        r'(?P<month>\d{1,2})-'
+        r'(?P<day>\d{1,2})-'
         r'(?P<buyer>[a-z]+)-'
         r'(?P<amount>\d+(?:_\d+)?)-'
         r'(?P<invoice_number>\d+)$'
