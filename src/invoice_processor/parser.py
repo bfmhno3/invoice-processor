@@ -28,7 +28,7 @@ class FilenameParser:
             None: 解析失败
         """
         # 去掉扩展名
-        name, _ = filename.strip().resplit('.', 1)
+        name, _ = filename.strip().rsplit('.', 1)
         match = self.FILE_PATTERN.match(name)
         if not match:
             return None
