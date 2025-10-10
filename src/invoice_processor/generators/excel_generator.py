@@ -22,6 +22,7 @@ class ExcelGenerator:
                 "购买人": inv.buyer,
                 "发票号码": inv.invoice_number,
                 "发票文件名": inv.original_filename,
+                "截图文件名": inv.screenshot_filename,
                 "是否有效": inv.is_valid,
                 "错误信息": inv.validation_errors,
             }
