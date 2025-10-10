@@ -28,7 +28,13 @@ class FilenameParser:
             None: 解析失败
         """
         # 去掉扩展名
-        name, _ = filename.strip().rsplit('.', 1)
+        try:
+            name, extension = filename.strip().rsplit('.', 1)
+        except ValueError:
+            return None
+        if extension != 'pdf':
+            return None
+
         match = self.FILE_PATTERN.match(name)
         if not match:
             return None
