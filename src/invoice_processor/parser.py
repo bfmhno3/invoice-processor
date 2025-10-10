@@ -14,7 +14,7 @@ class FilenameParser:
         r'(?P<day>\d{2})-'
         r'(?P<buyer>[a-z]+)-'
         r'(?P<amount>\d+(?:_\d+)?)-'
-        r'(?P<invoice_number>[A-Za-z0-9]+)$'
+        r'(?P<invoice_number>\d+)$'
     )
 
     def parse(self, filename: str) -> Invoice | None:
@@ -38,7 +38,7 @@ class FilenameParser:
             month = int(match.group('month'))
             day = int(match.group('day'))
             invoice_date = date(year, month, day)
-            amount = float(match.group('amount'))
+            amount = float(match.group('amount').replace('_', '.'))
             buyer = match.group('buyer')
             invoice_number = match.group('invoice_number')
             return Invoice(
