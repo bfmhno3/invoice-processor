@@ -20,7 +20,7 @@ class ExcelGenerator:
                 "日期": inv.invoice_date,
                 "金额": inv.amount,
                 "购买人": inv.buyer,
-                "发票号码": inv.invoice_date,
+                "发票号码": inv.invoice_number,
                 "发票文件名": inv.original_filename,
                 "是否有效": inv.is_valid,
                 "错误信息": inv.validation_errors,
