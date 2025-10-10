@@ -22,12 +22,13 @@ def process_invoices(directory: str, output_dir: str, template_path: str):
     all_invoices: list[Invoice] = []
 
     for filename in os.listdir(directory):
-        invoice: Invoice = parser.parse(filename)
-        if invoice:
-            validated_invoice: Invoice = validator.validate(invoice)
-            all_invoices.append(validated_invoice)
-        else:
-            print(f"文件名 '{filename}' 格式不正确，已跳过")
+        if filename.split('.')[-1] == 'pdf':
+            invoice: Invoice = parser.parse(filename)
+            if invoice:
+                validated_invoice: Invoice = validator.validate(invoice)
+                all_invoices.append(validated_invoice)
+            else:
+                print(f"文件名 '{filename}' 格式不正确，已跳过")
 
     # 输出校验结果
     print("\n--- 校验结果 ---")
