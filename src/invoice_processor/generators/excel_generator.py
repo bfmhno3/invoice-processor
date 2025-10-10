@@ -6,8 +6,11 @@ class ExcelGenerator:
     """
     将发票数据列表生成 Excel 文件
     """
-    def generate(self, invoices: list[Invoice], output_path: str) -> None:
-        valid_invoices = [inv for inv in invoices if inv.is_valid()]
+    def __init__(self, output_path: str):
+        self.output_path = output_path
+
+    def generate(self, invoices: list[Invoice]) -> None:
+        valid_invoices = [inv for inv in invoices if inv.is_valid]
         if not valid_invoices:
             print("没有有效的发票可供生成 Excel 文件")
             return
@@ -29,5 +32,5 @@ class ExcelGenerator:
         total_amount = df["金额"].sum()
         df.loc['总计'] = pd.Series([total_amount], index=['金额'])
 
-        df.to_excel(output_path, index=False, engine='openpyxl')
-        print(f"Excel 文件已生成: {output_path}")
+        df.to_excel(self.output_path, index=False, engine='openpyxl')
+        print(f"Excel 文件已生成: {self.output_path}")
