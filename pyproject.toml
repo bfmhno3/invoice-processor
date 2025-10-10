@@ -12,3 +12,7 @@ dependencies = [
 ]
 [project.scripts]
 process-invoices='invoice_procoessor.cli::main'
+[project.optional-dependencies]
+dev = [
+    "pytest",
+]
