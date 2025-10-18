@@ -17,8 +17,10 @@ class ExcelGenerator:
             print("没有有效的发票可供生成 Excel 文件")
             return
 
-        self._generate_excel_report(valid_invoices, "valid_invoices.xlsx")
-        self._generate_excel_report(invalid_invoices, "invalid_invoices.xlsx")
+        if len(valid_invoices) > 0:
+            self._generate_excel_report(valid_invoices, "valid_invoices.xlsx")
+        if len(invalid_invoices) > 0:
+            self._generate_excel_report(invalid_invoices, "invalid_invoices.xlsx")
 
     def _generate_excel_report(self, invoices: list[Invoice], file_name: str) -> None:
         data = [
