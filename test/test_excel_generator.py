@@ -50,8 +50,8 @@ def test_excel_generator_creates_valid_file(tmp_path, sample_invoices):
     Returns:
 
     """
-    output_file = tmp_path / "invoices.xlsx"
-    generator = ExcelGenerator(str(output_file))
+    output_file = tmp_path / "valid_invoices.xlsx"
+    generator = ExcelGenerator(tmp_path)
 
     generator.generate(sample_invoices)
 
@@ -60,27 +60,27 @@ def test_excel_generator_creates_valid_file(tmp_path, sample_invoices):
 
     assert len(df) == 4
     assert list(df.columns) == [
-        "日期",
-        "金额",
-        "购买人",
-        "发票号码",
-        "发票文件名",
-        "截图文件名",
-        "是否有效",
-        "错误信息",
+        "date",
+        "amount",
+        "buyer",
+        "invoice number",
+        "invoice filename",
+        "screenshot filename",
+        "valid",
+        "error",
     ]
 
     # 验证第一行数据
     first_row = df.iloc[0]
-    assert first_row["日期"] == pd.Timestamp(date(2023, 10, 23))
-    assert first_row["发票号码"] == "12345678901234567890"
-    assert first_row["金额"] == 50.0
-    assert first_row["购买人"] == "abc"
-    assert first_row["发票文件名"] == "2023-10-23-abc-50_0-12345678901234567890.pdf"
-    assert first_row["截图文件名"] == "2023-10-23-abc-50_0-12345678901234567890.png"
-    assert first_row["是否有效"] == 1.0
-    assert first_row["错误信息"] == "[]"
-    assert df.iloc[-1]["金额"] == 196.0
+    assert first_row["date"] == pd.Timestamp(date(2023, 10, 23))
+    assert first_row["invoice number"] == "12345678901234567890"
+    assert first_row["amount"] == 50.0
+    assert first_row["buyer"] == "abc"
+    assert first_row["invoice filename"] == "2023-10-23-abc-50_0-12345678901234567890.pdf"
+    assert first_row["screenshot filename"] == "2023-10-23-abc-50_0-12345678901234567890.png"
+    assert first_row["valid"] == 1.0
+    assert first_row["error"] == "[]"
+    assert df.iloc[-1]["amount"] == 196.0
 
 
 def test_excel_generator_no_valid_invoices(tmp_path):
@@ -93,7 +93,7 @@ def test_excel_generator_no_valid_invoices(tmp_path):
 
     """
     output_file = tmp_path / "invoices.xlsx"
-    generator = ExcelGenerator(str(output_file))
+    generator = ExcelGenerator(tmp_path)
 
     invalid_invoices = [
         Invoice(
