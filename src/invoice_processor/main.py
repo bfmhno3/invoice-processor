@@ -38,5 +38,5 @@ def process_invoices(directory: str, output_dir: str, template_path: str):
     print("------------------\n")
 
     # 生成输出
-    excel_gen = ExcelGenerator(os.path.join(output_dir, "invoices_summary.xlsx"))
+    excel_gen = ExcelGenerator(output_dir)
     excel_gen.generate(all_invoices)
