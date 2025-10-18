@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 from ..invoice import Invoice
 
 
@@ -11,10 +12,15 @@ class ExcelGenerator:
 
     def generate(self, invoices: list[Invoice]) -> None:
         valid_invoices = [inv for inv in invoices if inv.is_valid]
+        invalid_invoices = [inv for inv in invoices if not inv.is_valid]
         if not valid_invoices:
             print("没有有效的发票可供生成 Excel 文件")
             return
 
+        self._generate_excel_report(valid_invoices, "valid_invoices.xlsx")
+        self._generate_excel_report(invalid_invoices, "invalid_invoices.xlsx")
+
+    def _generate_excel_report(self, invoices: list[Invoice], file_name: str) -> None:
         data = [
             {
                 "日期": inv.invoice_date,
@@ -26,12 +32,13 @@ class ExcelGenerator:
                 "是否有效": inv.is_valid,
                 "错误信息": inv.validation_errors,
             }
-            for inv in valid_invoices
+            for inv in invoices
         ]
 
         df = pd.DataFrame(data)
         total_amount = df["金额"].sum()
-        df.loc['总计'] = pd.Series([total_amount], index=['金额'])
+        df.loc["总计"] = pd.Series([total_amount], index=["金额"])
 
-        df.to_excel(self.output_path, index=False, engine='openpyxl')
-        print(f"Excel 文件已生成: {self.output_path}")
+        output_file_path = os.path.join(self.output_path, file_name)
+
+        df.to_excel(output_file_path, index=False, engine='openpyxl')
