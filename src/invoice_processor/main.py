@@ -2,7 +2,8 @@ import os
 from .invoice import Invoice
 from .parser import FilenameParser
 from .validator import Validator
-from .generators.excel_generator import  ExcelGenerator
+from .generators.excel_generator import ExcelGenerator
+from .generators.latex_generator import LatexGenerator
 
 
 def process_invoices(directory: str, output_dir: str, template_path: str):
@@ -40,3 +41,6 @@ def process_invoices(directory: str, output_dir: str, template_path: str):
     # 生成输出
     excel_gen = ExcelGenerator(output_dir)
     excel_gen.generate(all_invoices)
+    latex_gen = LatexGenerator(output_dir)
+    latex_gen.generate(all_invoices)
+
