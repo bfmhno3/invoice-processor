@@ -1,6 +1,10 @@
 import re
+import logging
 from datetime import date
 from .invoice import Invoice
+
+
+logger = logging.getLogger(__name__)
 
 
 class FilenameParser:
@@ -31,12 +35,15 @@ class FilenameParser:
         try:
             name, extension = filename.strip().rsplit('.', 1)
         except ValueError:
+            logger.error(f"invalid filename format, cannot separate extension: {filename}")
             return None
         if extension != 'pdf':
+            logger.warning(f"file extension is not pdf: {extension}, filename: {filename}")
             return None
 
         match = self.FILE_PATTERN.match(name)
         if not match:
+            logger.warning(f"filename does not match expected pattern: {name}")
             return None
 
         try:
@@ -47,6 +54,7 @@ class FilenameParser:
             amount = float(match.group('amount').replace('_', '.'))
             buyer = match.group('buyer')
             invoice_number = match.group('invoice_number')
+            logger.info(f"successfully parsed invoice: date={invoice_date}, buyer={buyer}, amount={amount}, invoice_number={invoice_number}")
             return Invoice(
                 invoice_date=invoice_date,
                 invoice_number=invoice_number,
@@ -57,4 +65,5 @@ class FilenameParser:
                 is_valid=False
             )
         except (ValueError, IndexError) as e:
+            logger.error(f"error parsing invoice information: {e}, filename={filename}")
             return None

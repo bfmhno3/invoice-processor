@@ -1,6 +1,8 @@
 import click
 import os
 from .main import process_invoices
+import logging
+from .logging_config import setup_logging
 
 
 @click.command()
@@ -33,12 +35,13 @@ def main(directory: str, output: str, template: str):
     Returns:
 
     """
-    click.echo(f"输入目录：{directory}")
-    click.echo(f"输出目录：{output}")
-    click.echo(f"模板文件：{template}")
+    setup_logging() # 初始化日志系统
+    logging.info(f"input directory: {directory}")
+    logging.info(f"output directory: {output}")
+    logging.info(f"template directory: {template}")
 
     try:
         process_invoices(directory, output, template)
-        click.secho("\n处理成功！", fg='green')
+        logging.info("processing successful!")
     except Exception as e:
-        click.secho(f"\n处理失败: {e}", fg='red')
+        logging.error(f"processing failed: {e}")

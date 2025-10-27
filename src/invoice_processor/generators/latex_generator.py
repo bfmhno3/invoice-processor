@@ -1,6 +1,11 @@
 import os
+import logging
 from ..invoice import Invoice
-import pathlib
+from textwrap import dedent
+
+
+logger = logging.getLogger(__name__)
+
 
 class LatexGenerator:
     """
@@ -8,6 +13,7 @@ class LatexGenerator:
     """
     def __init__(self, output_dir: str):
         self.output_dir = output_dir
+        logger.info(f"latex generator initialized with output directory: '{self.output_dir}'")
 
     def _get_tex_header(self) -> str:
         """
@@ -88,9 +94,11 @@ class LatexGenerator:
             tex_context += self._get_tex_for_screenshot(inv)
 
         tex_context += self._get_tex_footer()
-
+        output_path: str = os.path.join(self.output_dir, "invoices.tex")
+        logger.info(f"writing latex file: '{output_path}")
         try:
-            with open(self.output_dir + "/invoices.tex", "w", encoding="utf-8") as f:
+            with open(output_path, "w", encoding="utf-8") as f:
                 f.write(tex_context)
+            logger.info(f"successfully generated latex file at '{output_path}'")
         except IOError as e:
-            print(e.get_message())
+            logger.error(f"failed to write latex file to '{output_path}': {e}", exc_info=True)
