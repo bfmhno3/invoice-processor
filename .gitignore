@@ -298,3 +298,4 @@ http-client.private.env.json
 .idea/ruff.xml
 
 resources
+logs
