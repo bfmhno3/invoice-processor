@@ -1,5 +1,6 @@
 import os
 import logging
+from PIL import Image
 from ..invoice import Invoice
 from textwrap import dedent
 
@@ -72,12 +73,36 @@ class LatexGenerator:
             return ""
 
         screenshot_path: str = "./resources/" + invoice.screenshot_filename
-        return dedent(rf"""
-            \begin{{center}}
-                \includegraphics[width=\textwidth, height=\paperheight, keepaspectratio]{{{screenshot_path}}}
-            \end{{center}}
-            \newpage
-        """)
+        need_rotate: bool = False
+        tex_screenshot: str = ""
+
+        try:
+            with Image.open(screenshot_path) as img:
+                width, height = img.size
+                if width > height:
+                    need_rotate = True
+                else:
+                    need_rotate = False
+        except FileNotFoundError:
+            logger.error(f"screenshot file not found: '{screenshot_path}'")
+            return ""
+
+        if need_rotate:
+            tex_screenshot: str = dedent(rf"""
+                \begin{{center}}
+                    \includegraphics[width=0.99\textheight, height=\textwidth, keepaspectratio, angle=90]{{{screenshot_path}}}
+                \end{{center}}
+                \newpage
+            """)
+        else:
+            tex_screenshot = dedent(rf"""
+                \begin{{center}}
+                    \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{{{screenshot_path}}}
+                \end{{center}}
+                \newpage
+            """)
+
+        return tex_screenshot
 
     def generate(self, invoices: list[Invoice]):
         """
