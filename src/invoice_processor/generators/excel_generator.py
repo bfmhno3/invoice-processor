@@ -58,9 +58,14 @@ class ExcelGenerator:
 
         df = pd.DataFrame(data)
         total_amount = df["amount"].sum()
-        df.loc["total"] = pd.Series([total_amount], index=["amount"])
+        total_row = pd.DataFrame([{"amount": total_amount}], index=["total"])
+        df = pd.concat([df, total_row])
 
         output_file_path = os.path.join(self.output_path, file_name)
         logger.info(f"saving excel report to '{output_file_path}'")
 
-        df.to_excel(output_file_path, index=False, engine='openpyxl')
+        try:
+            df.to_excel(output_file_path, index=True, engine="openpyxl")
+            logger.info(f"successfully generated excel report: '{output_file_path}'")
+        except Exception as e:
+            logger.error(f"failed to generate excel report: '{output_file_path}': {e}", exc_info=True)
