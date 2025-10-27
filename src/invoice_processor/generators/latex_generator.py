@@ -20,13 +20,13 @@ class LatexGenerator:
         Returns:
             LaTeX 文档的固定头部
         """
-        tex_header: str = r"""
+        tex_header: str = dedent( r"""
             \documentclass[a4paper, oneside]{article}
             \usepackage[a4paper, margin=0.1cm]{geometry}
             \usepackage{graphicx}
             \pagestyle{empty}
             \begin{document}
-        """
+        """)
 
         return tex_header
 
@@ -35,9 +35,9 @@ class LatexGenerator:
         Returns:
             LaTeX 文档的固定尾部
         """
-        tex_footer: str = r"""
+        tex_footer: str = dedent(r"""
             \end{document}
-        """
+        """)
 
         return tex_footer
 
@@ -51,12 +51,12 @@ class LatexGenerator:
             LaTeX 代码块
         """
         invoice_path: str = "./resources/" + invoice.original_filename
-        return rf"""
+        return dedent(rf"""
             \begin{{center}}
                 \includegraphics[width=0.99\textheight, height=\textwidth, keepaspectratio, angle=90]{{{invoice_path}}}
             \end{{center}}
             \newpage
-        """
+        """)
 
     def _get_tex_for_screenshot(self, invoice: Invoice) -> str:
         """
@@ -68,15 +68,16 @@ class LatexGenerator:
             LaTeX 代码块
         """
         if not invoice.is_valid:
+            logger.warning(f"skipping screenshot for invalid invoice: '{invoice.original_filename}'")
             return ""
 
         screenshot_path: str = "./resources/" + invoice.screenshot_filename
-        return rf"""
+        return dedent(rf"""
             \begin{{center}}
                 \includegraphics[width=\textwidth, height=\paperheight, keepaspectratio]{{{screenshot_path}}}
             \end{{center}}
             \newpage
-        """
+        """)
 
     def generate(self, invoices: list[Invoice]):
         """
