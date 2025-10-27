@@ -10,13 +10,12 @@ from .generators.latex_generator import LatexGenerator
 logger = logging.getLogger(__name__)
 
 
-def process_invoices(directory: str, output_dir: str, template_path: str):
+def process_invoices(directory: str, output_dir: str):
     """
     处理指定目录下的所有发票文件
     Args:
         directory: 发票文件存放目录
         output_dir: 处理结果输出目录
-        template_path: 模板文件路径
 
     Returns:
 
