@@ -28,43 +28,52 @@ class Validator:
             需在调用前检查 invoice 不为 None
         """
         logger.info(f"starting validation for invoice from file: '{invoice.original_filename}'")
-        self._check_screenshot_exists(invoice)
+        self._find_screenshots(invoice)
 
-        if not invoice.validation_errors:
-            invoice.is_valid = True
-            logger.info(f"validation successful for invoice: '{invoice.original_filename}'")
-        else:
-            invoice.is_valid = False
-            logger.warning(f"validation failed for invoice: '{invoice.original_filename}")
+        if not invoice.is_valid:
+            logger.error(f"no screenshot found for invoice: '{invoice.original_filename}")
 
         return invoice
 
-    def _check_screenshot_exists(self, invoice: Invoice) -> bool:
+    def _find_screenshots(self, invoice: Invoice) -> None:
         """
-        检查截图文件是否存在
+        查找与发票对应的截图文件，并更新 invoice.screenshot_filenames 列表
+        支持两种命名规则：
+        1. 与发票文件具有相同的 basename
+        2. 在发票文件 basename 后附加 '-1', '-2', ... 后缀的截图。
         Args:
-            invoice: Invoice 对象
+            invoice:
 
         Returns:
-            bool: 截图文件存在返回 True，否则返回 False
+
         """
-        logger.debug(f"checking for screenshot for invoice: '{invoice.original_filename}'")
-
-        base_name, _ = os.path.splitext(invoice.original_filename)
+        logger.debug(f"checking for screenshots for invoice: '{invoice.original_filename}'")
+        basename, _ = os.path.splitext(invoice.original_filename)
         possible_extensions = ['.jpg', '.png', '.jpeg']
-        screenshot_found = False
 
+        # 1. 检查具有相同 basename 的文件
         for extension in possible_extensions:
-            screenshot_name = f"{base_name}{extension}"
+            screenshot_name = f"{basename}{extension}"
             screenshot_path = os.path.join(self.invoice_dir, screenshot_name)
-            logger.debug(f"checking for screenshot at path: '{screenshot_path}'")
             if os.path.exists(screenshot_path):
-                invoice.screenshot_filename = screenshot_name
-                screenshot_found = True
-                logger.info(f"found screenshot for invoice: '{screenshot_name}")
+                invoice.screenshot_filenames.append(screenshot_name)
+                logger.info(f"found screenshot: '{screenshot_name}' for invoice: '{invoice.original_filename}'")
+
+        # 2. 检查带有 '-1', '-2', ... 后缀的文件
+        i = 1
+        while True:
+            found_in_iteration = False
+            suffixed_basename = f"{basename}-{i}"
+            for extension in possible_extensions:
+                screenshot_name = f"{suffixed_basename}{extension}"
+                screenshot_path = os.path.join(self.invoice_dir, screenshot_name)
+                if os.path.exists(screenshot_path):
+                    invoice.screenshot_filenames.append(screenshot_name)
+                    logger.info(f"found screenshot: '{screenshot_name}' for invoice: '{invoice.original_filename}'")
+                    found_in_iteration = True
+
+            if not found_in_iteration:
                 break
 
-        if not screenshot_found:
-            error_message: str = "missing corresponding screenshot file"
-            invoice.validation_errors.append(error_message)
-            logger.warning(f"no screenshot found for invoice: '{invoice.original_filename}'")
+            i += 1
+

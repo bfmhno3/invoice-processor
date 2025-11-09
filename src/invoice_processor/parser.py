@@ -61,8 +61,7 @@ class FilenameParser:
                 amount=amount,
                 buyer=buyer,
                 original_filename=filename,
-                screenshot_filename='',
-                is_valid=False
+                screenshot_filenames=[],
             )
         except (ValueError, IndexError) as e:
             logger.error(f"error parsing invoice information: {e}, filename={filename}")

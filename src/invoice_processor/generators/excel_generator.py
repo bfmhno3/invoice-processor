@@ -17,26 +17,14 @@ class ExcelGenerator:
 
     def generate(self, invoices: list[Invoice]) -> None:
         logger.info(f"starting excel generation process")
-        valid_invoices = [inv for inv in invoices if inv.is_valid]
-        invalid_invoices = [inv for inv in invoices if not inv.is_valid]
 
-        logger.info(f"found {len(valid_invoices)} valid and {len(invalid_invoices)} invalid invoices")
-
-        if not valid_invoices and not invalid_invoices:
+        if not invoices:
             logger.warning("no invoices to process")
             return
 
-        if len(valid_invoices) > 0:
-            logger.info("generating report for valid invoices")
-            self._generate_excel_report(valid_invoices, "valid_invoices.xlsx")
-        else:
-            logger.info("no valid invoices to generate a report for")
-
-        if len(invalid_invoices) > 0:
-            logger.info("generating report for invalid invoices")
-            self._generate_excel_report(invalid_invoices, "invalid_invoices.xlsx")
-        else:
-            logger.info("no invalid invoices to generate a report for")
+        logger.info(f"found {len(invoices)} invoices to process")
+        logger.info(f"generating report for all invoices")
+        self._generate_excel_report(invoices, "invoices.xlsx")
 
         logger.info("excel generation process finished")
 
@@ -49,9 +37,8 @@ class ExcelGenerator:
                 "buyer": inv.buyer,
                 "invoice number": inv.invoice_number,
                 "invoice filename": inv.original_filename,
-                "screenshot filename": inv.screenshot_filename,
+                "screenshot filenames": inv.screenshot_filenames,
                 "valid": inv.is_valid,
-                "error": inv.validation_errors,
             }
             for inv in invoices
         ]

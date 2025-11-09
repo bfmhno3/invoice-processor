@@ -53,7 +53,7 @@ def process_invoices(directory: str, output_dir: str):
     if invalid_count > 0:
         for inv in all_invoices:
             if not inv.is_valid:
-                logger.error(f"files '{inv.original_filename}' is invalid: {', '.join(inv.validation_errors)}")
+                logger.error(f"files '{inv.original_filename}' is invalid")
 
     # 生成输出
     logger.info("starting to generate excel report")

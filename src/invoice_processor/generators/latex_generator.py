@@ -21,7 +21,7 @@ class LatexGenerator:
         Returns:
             LaTeX 文档的固定头部
         """
-        tex_header: str = dedent( r"""
+        tex_header: str = dedent(r"""
             \documentclass[a4paper, oneside]{article}
             \usepackage[a4paper, margin=0.1cm]{geometry}
             \usepackage{graphicx}
@@ -54,9 +54,8 @@ class LatexGenerator:
         invoice_path: str = "./resources/" + invoice.original_filename
         return dedent(rf"""
             \begin{{center}}
-                \includegraphics[width=0.99\textheight, height=\textwidth, keepaspectratio, angle=90]{{{invoice_path}}}
+                \includegraphics[width=\textwidth, height=0.49\textheight, keepaspectratio]{{{invoice_path}}}
             \end{{center}}
-            \newpage
         """)
 
     def _get_tex_for_screenshot(self, invoice: Invoice) -> str:
@@ -70,39 +69,27 @@ class LatexGenerator:
         """
         if not invoice.is_valid:
             logger.warning(f"skipping screenshot for invalid invoice: '{invoice.original_filename}'")
-            return ""
+            return "\\newpage\n"
 
-        screenshot_path: str = "./resources/" + invoice.screenshot_filename
-        need_rotate: bool = False
-        tex_screenshot: str = ""
+        width_fraction: float = 0.95 / invoice.screenshot_nums
 
-        try:
-            with Image.open(screenshot_path) as img:
-                width, height = img.size
-                if width > height:
-                    need_rotate = True
-                else:
-                    need_rotate = False
-        except FileNotFoundError:
-            logger.error(f"screenshot file not found: '{screenshot_path}'")
-            return ""
+        graphics_commands = []
+        for filename in invoice.screenshot_filenames:
+            screenshot_path: str = "./resources/" + filename
+            command: str = (
+                f"\\includegraphics[width={width_fraction:.2f}\\textwidth, "
+                f"height=0.49\\textheight, keepaspectratio]{{{screenshot_path}}}"
+            )
+            graphics_commands.append(command)
 
-        if need_rotate:
-            tex_screenshot: str = dedent(rf"""
-                \begin{{center}}
-                    \includegraphics[width=0.99\textheight, height=\textwidth, keepaspectratio, angle=90]{{{screenshot_path}}}
-                \end{{center}}
-                \newpage
-            """)
-        else:
-            tex_screenshot = dedent(rf"""
-                \begin{{center}}
-                    \includegraphics[width=\textwidth, height=\textheight, keepaspectratio]{{{screenshot_path}}}
-                \end{{center}}
-                \newpage
-            """)
+        all_graphics: str = "\\quad".join(graphics_commands)
 
-        return tex_screenshot
+        return dedent(rf"""
+            \begin{{center}}
+                {all_graphics}
+            \end{{center}}
+            \newpage
+        """)
 
     def generate(self, invoices: list[Invoice]):
         """
